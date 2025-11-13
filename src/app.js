@@ -1,13 +1,20 @@
 const express = require("express");
 
 const app = express();
-app.use("/",(req,res)=>{
-    res.send("home page")
+
+app.get("/user",(req , res)=>{
+    res.send({FirstName: "Faiz" , LastName: "Favaz" })
+});
+app.post("/user",(req,res)=>{
+    res.send("data saved successfully in to database")
+});
+app.delete('/user',(req,res)=>{
+    res.send("deleted successfully");
+});
+app.patch("/user",(req,res)=>{
+    res.send("updated successfully")
 })
 
-app.use("/about",(req,res)=>{
-    res.send("about page")
-})
 
 
 app.listen(3000,()=>{
