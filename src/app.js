@@ -2,17 +2,27 @@ const express = require("express");
 
 const app = express();
 
-app.get("/user",(req , res)=>{
-    res.send({FirstName: "Faiz" , LastName: "Favaz" })
-});
-app.post("/user",(req,res)=>{
-    res.send("data saved successfully in to database")
-});
-app.delete('/user',(req,res)=>{
-    res.send("deleted successfully");
-});
-app.patch("/user",(req,res)=>{
-    res.send("updated successfully")
+app.use("/user",(req,res,next)=>{
+    console.log("Handling the route user!!");
+    next();
+    
+},
+(req,res,next)=>{
+    console.log("Handling the route user2");
+     next(); 
+},
+(req,res,next)=>{
+    console.log("Handling the route user3");
+     next(); 
+},
+(req,res,next)=>{
+    console.log("Handling the route user4");
+    next();  
+},
+(req,res)=>{
+    console.log("Handling the route user5");
+  res.send("5th response") 
+
 })
 
 
