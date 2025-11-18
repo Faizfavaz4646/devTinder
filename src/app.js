@@ -1,32 +1,42 @@
 const express = require("express");
-const{adminAuth,userAuth} =require("./middlewares/auth")
+
 
 const app = express();
 
-app.use("/admin", adminAuth)
 
-
-
-
-app.get("/user/login",(req,res)=>{
-    res.send("user logedin")
-})
-app.get("/user/profile",userAuth,(req,res)=>{
-    res.send("sent user profile")
-})
-
-app.get("/user/order",userAuth,(req,res)=>{
-    res.send("sent order details")
+app.use("/",(err,req,res,next)=>{
+   
+    if(err){
+        res.status(500).send("something went wrong")
+    }
 })
 
 
 
-app.get("/admin/getAllData",(req,res)=>{
-   res.send("All data sent")
+app.get("/getUserData",(req,res)=>{
+
+    // try{
+    throw new Error("hwgsdj")
+    res.send("user data sent")
+
+    // }catch(err){
+    //     if(err){
+    //         res.status(500).send("something wrong contact support")
+    //     }
+        
+    }
+   
+
+)
+app.use("/",(err,req,res,next)=>{
+   
+    if(err){
+        res.status(500).send("something went wrong")
+    }
 })
-app.get("/admin/deleteData",(req,res)=>{
-         res.send("deleted data ")
-})
+
+
+
 
 
 
