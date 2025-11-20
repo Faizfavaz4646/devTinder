@@ -16,6 +16,41 @@ res.send("user data added successfully!!")
     }
 
 })
+// api for etting one user data by emiid 
+
+app.get("/user", async (req,res)=>{
+    const userMail =req.body.emailID
+
+try {
+    const users= await User.findOne({emailID :userMail})
+    if(users.length === 0){
+        res.status(404).send("user not found");
+    }else {
+        res.send(users);
+    }
+} catch(err){
+    res.status(400).send("somthing went wrong")
+}
+
+})
+
+//feed for getting all users
+
+app.get("/feed", async (req,res)=>{
+   
+
+try {
+     const users = await User.find({})
+    if(!users){
+        res.status(404).send("data not found")
+    } else {
+        res.send(users)
+    }
+} catch (err){
+    res.status(400).send("somthing went wrong")
+
+}
+})
 
 
 connectDB()
