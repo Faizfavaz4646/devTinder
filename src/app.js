@@ -4,6 +4,7 @@ const app = express();
 const User = require("./model/user");
 
  app.use(express.json());
+ //signup api
 app.post("/signup", async(req,res)=>{
     const user= new User(req.body)
     
@@ -45,6 +46,17 @@ app.delete("/user", async (req,res)=>{
     }catch (err){
         res.status(400).send("something went wrong")
     }
+});
+
+app.patch("/user", async (req,res)=>{
+    const userId =req.body.userId;
+    const data =req.body
+    try{
+    await User.findByIdAndUpdate({_id :userId},data)
+        res.send("user data updated successfully")
+    } catch (err){
+        send.status(400).send("something went wrong")
+    }
 })
 
 //feed for getting all users
@@ -63,7 +75,7 @@ try {
     res.status(400).send("somthing went wrong")
 
 }
-})
+});
 
 
 connectDB()
