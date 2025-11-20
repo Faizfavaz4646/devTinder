@@ -15,6 +15,7 @@ res.send("user data added successfully!!")
     } catch{
         res.status(400).send("user cannot be added")
     }
+    
 
 })
 // api for etting one user data by emiid 
@@ -54,13 +55,14 @@ app.patch("/user", async (req,res)=>{
 
     try{
     const user =await User.findByIdAndUpdate({_id :userId},data,{
+        runValidators:true,
         returnDocument:"after"
     });
     console.log(user)
     
         res.send("user data updated successfully")
     } catch (err){
-        send.status(400).send("something went wrong")
+        res.status(400).send("UPDATE FAILED"+ err.message);
     }
 })
 
