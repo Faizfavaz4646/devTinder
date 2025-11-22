@@ -49,14 +49,26 @@ app.delete("/user", async (req,res)=>{
     }
 });
 
-app.patch("/user", async (req,res)=>{
-    const userId =req.body.userId;
+app.patch("/user/:userId", async (req,res)=>{
+    const userId =req.params?.userId;
     const data =req.body
-
+ 
     try{
-    const user =await User.findByIdAndUpdate({_id :userId},data,{
-        runValidators:true,
-        returnDocument:"after"
+          const ALLOWED_UPDATES=["about","skills","age"];
+        const isupdatesAllowed =Object.keys(data).every((k)=>
+        ALLOWED_UPDATES.includes(k))
+        if(!isupdatesAllowed){
+            throw new Error("skill updates failed")
+
+        }
+
+        if(data?.skills.length > 10){
+            throw new Error("cannot add more than 10 skills")
+        }
+    const user =await User.findByIdAndUpdate({_id: userId},data,{
+      
+        returnDocument:"after",
+          runValidators:true
     });
     console.log(user)
     
