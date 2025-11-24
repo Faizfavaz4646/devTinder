@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+const validator = require("validator");
 const userSchema = new mongoose.Schema({
 
     firstName :{
@@ -18,13 +19,21 @@ const userSchema = new mongoose.Schema({
         unique:true,
         lowercase:true,
         trim:true,
+       validate:{
+        validator(value){
+            if(!validator.isEmail(value)){
+            throw new Error("invalid Email address" + value)
+            }
+        }
+
+       } 
 
     },
     password:{
         type:String,
         required:true,
         minLength:8,
-        maxLength:20,
+        maxLength:64,
 
     },
     age:{
@@ -45,7 +54,11 @@ const userSchema = new mongoose.Schema({
     about:{
         type:String,
         default:"this is about discription of user",
-    },   
+    }, 
+   photoURL: {
+    type:String,
+        default:"https://i.pinimg.com/1200x/c1/de/64/c1de64f6429dc8737b1140263100ad49.jpg"
+    },
 },{timestamps:true})
 
 module.exports=mongoose.model("User",userSchema);
