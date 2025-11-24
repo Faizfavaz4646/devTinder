@@ -37,6 +37,32 @@ res.send("user data added successfully!!")
 })
 // api for etting one user data by emiid 
 
+app.post("/login", async(req,res)=>{
+    try{
+          const {emailID,password}=req.body;
+
+    const user = await User.findOne({emailID:emailID})
+    if(!user){
+        throw new Error("invalid cridentials")
+    }
+    const isPasswordVlid = await bcrypt.compare(password,user.password)
+
+    if(!isPasswordVlid){
+        res.send("invalid cridantials")
+    }else{
+        res.send("login successfull....!!")
+    }
+
+    } catch(err){
+        res.status(400).send("ERROR : " + err.message)
+    }
+ 
+  
+
+
+
+})
+
 app.get("/user", async (req,res)=>{
     const userMail =req.body.emailID
 
