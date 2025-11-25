@@ -1,25 +1,31 @@
-const adminAuth=(req,res,next)=>{
-     console.log("ckecked authentication ");
-    const token = "xyz";
-    const isAuthorized =token === "xyz";
-    if(!isAuthorized){
-        res.status(401).send("Un Authorized")
-    }else {
-        next();
+const jwt =require("jsonwebtoken");
+const User = require("../model/user")
 
-    }
-}
-const userAuth=(req,res,next)=>{
-     console.log("ckecked user authentication ");
-    const token = "xyz";
-    const isAuthorized =token === "xyz";
-    if(!isAuthorized){
-        res.status(401).send("Un Authorized")
-    }else {
-        next();
+const userAuth= async(req,res,next)=>{
+    try{ 
+        const {token} =req.cookies;
 
+    if(!token){
+        throw new Error("invalid token..!!")
     }
+     const decodedData= await jwt.verify(token,"Fafa$4646")
+   const {_id}=decodedData
+   const user = await User.findById(_id)
+
+   if(!user){
+    throw new Error("user not found")
+   }
+   req.user =user;
+    next()
+  
+
+
+    } catch (err){
+        res.status(400).send("ERROR :"+err.message)
+    }
+
+      
 }
 module.exports={
-    adminAuth,userAuth
+    userAuth,
 }

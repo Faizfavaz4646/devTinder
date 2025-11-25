@@ -6,6 +6,7 @@ const { validateSignupData }=require("./utils/validation");
 const bcrypt= require("bcrypt");
 const cookieParser = require("cookie-parser")
 const jwt = require("jsonwebtoken");
+const {userAuth} = require("./middlewares/auth")
 
  app.use(express.json());
  app.use(cookieParser())
@@ -39,20 +40,10 @@ res.send("user data added successfully!!")
 
 })
 
-app.get("/profile", async(req,res)=>{
+app.get("/profile",userAuth, async(req,res)=>{
   try{
-    const cookies =req.cookies;
-
-    const {token}= cookies
-
-    const decodedMessahe = await jwt.verify(token,"Fafa$4646")
-    console.log(decodedMessahe);
-
-    const {_id}=decodedMessahe;
-    console.log("logedin user is : " + _id);
-
-    const user = await User.findById({_id})
     
+    const user=req.user
 
     res.send(user)
 
@@ -77,7 +68,7 @@ app.post("/login", async(req,res)=>{
     if(isPasswordVlid){
 
         const token = await jwt.sign({_id: user._id},"Fafa$4646")
-        console.log(token);
+      
         
 
         res.cookie("token", token)
