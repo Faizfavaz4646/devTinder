@@ -4,8 +4,11 @@ const app = express();
 const User = require("./model/user");
 const { validateSignupData }=require("./utils/validation");
 const bcrypt= require("bcrypt");
+const cookieParser = require("cookie-parser")
+const jwt = require("jsonwebtoken");
 
  app.use(express.json());
+ app.use(cookieParser())
  //signup api
 app.post("/signup", async(req,res)=>{
 
@@ -35,6 +38,30 @@ res.send("user data added successfully!!")
     
 
 })
+
+app.get("/profile", async(req,res)=>{
+  try{
+    const cookies =req.cookies;
+
+    const {token}= cookies
+
+    const decodedMessahe = await jwt.verify(token,"Fafa$4646")
+    console.log(decodedMessahe);
+
+    const {_id}=decodedMessahe;
+    console.log("logedin user is : " + _id);
+
+    const user = await User.findById({_id})
+    
+
+    res.send(user)
+
+  }catch(err){
+        res.status(400).send("ERROR : " + err.message)
+    }  
+    
+
+})
 // api for etting one user data by emiid 
 
 app.post("/login", async(req,res)=>{
@@ -45,12 +72,20 @@ app.post("/login", async(req,res)=>{
     if(!user){
         throw new Error("invalid cridentials")
     }
-    const isPasswordVlid = await bcrypt.compare(password,user.password)
+    const isPasswordVlid = await bcrypt.compare(password,user.password);
 
-    if(!isPasswordVlid){
-        res.send("invalid cridantials")
+    if(isPasswordVlid){
+
+        const token = await jwt.sign({_id: user._id},"Fafa$4646")
+        console.log(token);
+        
+
+        res.cookie("token", token)
+         res.send("login successfull....!!")
+      
     }else{
-        res.send("login successfull....!!")
+        throw new Error("invalid credential")
+     
     }
 
     } catch(err){
