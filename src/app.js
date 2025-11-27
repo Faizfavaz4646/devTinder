@@ -6,7 +6,8 @@ const { validateSignupData }=require("./utils/validation");
 const bcrypt= require("bcrypt");
 const cookieParser = require("cookie-parser")
 const jwt = require("jsonwebtoken");
-const {userAuth} = require("./middlewares/auth")
+const {userAuth} = require("./middlewares/auth");
+const user = require("./model/user");
 
  app.use(express.json());
  app.use(cookieParser())
@@ -19,8 +20,8 @@ app.post("/signup", async(req,res)=>{
      //encrypt the password
 
     const {firstName,lastName,emailID,password}=req.body
+    
     const passwordHash= await bcrypt.hash(password,10)
-    console.log(passwordHash);
     
     const user= new User({
         firstName,
@@ -39,22 +40,7 @@ res.send("user data added successfully!!")
     
 
 })
-
-app.get("/profile",userAuth, async(req,res)=>{
-  try{
-    
-    const user=req.user
-
-    res.send(user)
-
-  }catch(err){
-        res.status(400).send("ERROR : " + err.message)
-    }  
-    
-
-})
-// api for etting one user data by emiid 
-
+//login api
 app.post("/login", async(req,res)=>{
     try{
           const {emailID,password}=req.body;
@@ -88,82 +74,31 @@ app.post("/login", async(req,res)=>{
 
 
 })
-
-app.get("/user", async (req,res)=>{
-    const userMail =req.body.emailID
-
-try {
-    const users= await User.findOne({emailID :userMail})
-    if(users.length === 0){
-        res.status(404).send("user not found");
-    }else {
-        res.send(users);
-    }
-} catch(err){
-    res.status(400).send("somthing went wrong")
-}
-
-});
-
-//delete one user
-
-app.delete("/user", async (req,res)=>{
-    const userId=req.body.userId
-    try{
-        const user= await User.findByIdAndDelete(userId)
-        res.send("user deleted successfully");
-
-    }catch (err){
-        res.status(400).send("something went wrong")
-    }
-});
-
-app.patch("/user/:userId", async (req,res)=>{
-    const userId =req.params?.userId;
-    const data =req.body
- 
-    try{
-          const ALLOWED_UPDATES=["about","skills","age"];
-        const isupdatesAllowed =Object.keys(data).every((k)=>
-        ALLOWED_UPDATES.includes(k))
-        if(!isupdatesAllowed){
-            throw new Error("skill updates failed")
-
-        }
-
-        if(data?.skills.length > 10){
-            throw new Error("cannot add more than 10 skills")
-        }
-    const user =await User.findByIdAndUpdate({_id: userId},data,{
-      
-        returnDocument:"after",
-          runValidators:true
-    });
-    console.log(user)
+//getting user details
+app.get("/profile",userAuth, async(req,res)=>{
+  try{
     
-        res.send("user data updated successfully")
-    } catch (err){
-        res.status(400).send("UPDATE FAILED"+ err.message);
-    }
+    const user=req.user
+
+    res.send(user)
+
+  }catch(err){
+        res.status(400).send("ERROR : " + err.message)
+    }  
+    
+
 })
 
-//feed for getting all users
+app.post("/sendconnectionrequest",userAuth, async (req,res)=>{
+    const user=req.user;
+    res.send("you have an request from "+ user.firstName)
 
-app.get("/feed", async (req,res)=>{
-   
+})
 
-try {
-     const users = await User.find({})
-    if(!users){
-        res.status(404).send("data not found")
-    } else {
-        res.send(users)
-    }
-} catch (err){
-    res.status(400).send("somthing went wrong")
 
-}
-});
+
+
+
 
 
 connectDB()
