@@ -47,16 +47,13 @@ app.post("/login", async(req,res)=>{
 
     const user = await User.findOne({emailID:emailID})
     if(!user){
-        throw new Error("invalid cridentials")
+        throw new Error("invalid credentials")
     }
-    const isPasswordVlid = await bcrypt.compare(password,user.password);
+    const isPasswordVlid = await user.validatePassword(password)
 
     if(isPasswordVlid){
 
-        const token = await jwt.sign({_id: user._id},"Fafa$4646")
-      
-        
-
+        const token = await user.getJWT()
         res.cookie("token", token)
          res.send("login successfull....!!")
       
@@ -68,9 +65,6 @@ app.post("/login", async(req,res)=>{
     } catch(err){
         res.status(400).send("ERROR : " + err.message)
     }
- 
-  
-
 
 
 })
@@ -90,8 +84,8 @@ app.get("/profile",userAuth, async(req,res)=>{
 })
 
 app.post("/sendconnectionrequest",userAuth, async (req,res)=>{
-    const user=req.user;
-    res.send("you have an request from "+ user.firstName)
+const user = req.user
+    res.send(user.firstName + " sent friend request")
 
 })
 
